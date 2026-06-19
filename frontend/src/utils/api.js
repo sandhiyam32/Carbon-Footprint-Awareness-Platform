@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+
+const api = axios.create({ baseURL: API_BASE_URL });
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('access_token');
@@ -15,7 +17,7 @@ api.interceptors.response.use(
       const refresh = localStorage.getItem('refresh_token');
       if (refresh) {
         try {
-          const { data } = await axios.post('/api/auth/token/refresh/', { refresh });
+          const { data } = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh });
           localStorage.setItem('access_token', data.access);
           err.config.headers.Authorization = `Bearer ${data.access}`;
           return api(err.config);
